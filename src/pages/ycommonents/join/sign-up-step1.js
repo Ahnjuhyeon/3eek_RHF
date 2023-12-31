@@ -1,18 +1,25 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { schema } from "../../../utils/schema";
+import { yupResolver } from "@hookform/resolvers/yup";
 const SignUpStep1 = () => {
   //useForm
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
   // console.log(errors); //오 떳어
   //nvigate
   const navigate = useNavigate();
-  const onSignupNext = () => {
-    navigate("/signup2");
+  const onSignupNext = (data) => {
+    navigate("/signup2", {
+      state: { email: data.email, password: data.password },
+    });
+    console.log(data.email);
   };
   return (
     <Wrapper>
@@ -21,20 +28,14 @@ const SignUpStep1 = () => {
       <FormWrapper
         onSubmit={handleSubmit((data) => {
           console.log(data);
+          // alert("이메일:" + data.email + " " + "비밀번호:" + data.password);
         })}
       >
         <input
           id="email"
           type="text"
           placeholder="이메일아이디"
-          {...register("email", {
-            required: "이메일을 입력해주세요",
-            pattern: {
-              value:
-                /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i,
-              message: "이메일 형식에 맞지 않습니다.",
-            },
-          })}
+          {...register("email")}
         />
         {errors?.email ? <p>{errors.email?.message}</p> : null}
 
@@ -43,14 +44,7 @@ const SignUpStep1 = () => {
           id="password"
           type="password"
           placeholder="비밀번호"
-          {...register("password", {
-            required: "비밀번호를 입력해주세요",
-            pattern: {
-              value: /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$/,
-              message:
-                "비밀번호는 8글자 이상 대소문자 특수문자를 1자 이상 포함해주세요.",
-            },
-          })}
+          {...register("password")}
         />
         {errors?.password ? <p>{errors.password?.message}</p> : null}
         {/* 비밀번호 확인 */}
